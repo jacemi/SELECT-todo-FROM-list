@@ -2,39 +2,37 @@ DROP USER michael;
 
 DROP DATABASE IF EXISTS todo_app;
 
-CREATE USER michael;
-ALTER USER michael WITH ENCRYPTED PASSWORD 'stonebreaker';
+CREATE USER michael WITH ENCRYPTED PASSWORD 'stonebreaker';
 
-CREATE DATABASE todo_app;
+CREATE DATABASE todo_app WITH OWNER michael;
 \c todo_app;
-CREATE TABLE Tasks (
-  ID SERIAL NOT NULL,
+CREATE TABLE tasks (
+  id SERIAL PRIMARY KEY,
   title varchar(225) NOT NULL,
-  description text NULL,
+  description text,
   created_at timestamp without time zone NOT NULL DEFAULT now(),
-  updated_at timestamp without time zone NULL,
-  completed boolean NULL NULL,
-  PRIMARY KEY (ID)
+  updated_at timestamp without time zone,
+  completed boolean NOT NULL DEFAULT false
 );
-
-ALTER TABLE Tasks
+--table names lower case 
+ALTER TABLE tasks
 DROP COLUMN completed;
 
-ALTER TABLE Tasks
-ADD completed_at timestamp without time zone NULL DEFAULT NULL;
+ALTER TABLE tasks
+ADD COLUMN completed_at timestamp without time zone NULL DEFAULT NULL;
 
-ALTER TABLE Tasks
+ALTER TABLE tasks
 ALTER COLUMN updated_at SET NOT NULL,
 ALTER COLUMN updated_at SET DEFAULT now();
 
-INSERT INTO Tasks
-VALUES (default, 'Study SQL', 'Complete this exercise', now(), now(), NULL);
+INSERT INTO tasks
+VALUES (DEFAULT, 'Study SQL', 'Complete this exercise', now(), now(), NULL);
 
-INSERT INTO Tasks(title, description)
+INSERT INTO tasks(title, description)
 VALUES ('Study PostgreSQL', 'Read all the documentation');
 
 SELECT title
-FROM Tasks
+FROM tasks
 WHERE completed_at IS NULL;
 
 UPDATE tasks
@@ -42,36 +40,36 @@ SET completed_at = now()
 WHERE title = 'Study SQL';
 
 SELECT title, description
-FROM Tasks
+FROM tasks
 WHERE completed_at IS NULL;
 
 SELECT *
-FROM Tasks
+FROM tasks
 ORDER BY created_at DESC;
 
-INSERT INTO Tasks(title, description)
+INSERT INTO tasks(title, description)
 VALUES ('mistake 1', 'a test entry');
 
-INSERT INTO Tasks(title, description)
+INSERT INTO tasks(title, description)
 VALUES ('mistake 2', 'another title entry');
 
-INSERT INTO Tasks(title, description)
+INSERT INTO tasks(title, description)
 VALUES ('third mistake', 'another test entry');
 
 SELECT title
-FROM Tasks
+FROM tasks
 WHERE title LIKE '%mistake%';
 
-DELETE FROM Tasks
+DELETE FROM tasks
 WHERE title='mistake 1';
 
 SELECT title, description
-FROM Tasks
+FROM tasks
 WHERE title LIKE '%mistake%';
 
-DELETE FROM Tasks
+DELETE FROM tasks
 WHERE title LIKE '%mistake%';
 
 SELECT *
-FROM Tasks
+FROM tasks
 ORDER BY title ASC;
